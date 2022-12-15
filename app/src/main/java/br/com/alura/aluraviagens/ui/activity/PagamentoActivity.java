@@ -1,11 +1,13 @@
 package br.com.alura.aluraviagens.ui.activity;
 
+import static br.com.alura.aluraviagens.ui.activity.PacotesActivityConstantes.CHAVE_PACOTE;
+
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import java.math.BigDecimal;
 
 import br.com.alura.aluraviagens.R;
 import br.com.alura.aluraviagens.model.Pacote;
@@ -15,6 +17,8 @@ public class PagamentoActivity extends AppCompatActivity {
 
     private static final String TITULO_APPBAR = "Pagamento";
 
+    private Pacote pacote;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,13 +26,27 @@ public class PagamentoActivity extends AppCompatActivity {
 
         setTitle(TITULO_APPBAR);
 
-        Pacote pacoteSp = new Pacote("São Paulo", "sao_paulo_sp", 2,
-                new BigDecimal("2430000000.99"));
+        Intent intent = getIntent();
+        pacote = intent.getParcelableExtra(CHAVE_PACOTE);
 
-        mostraPreco(pacoteSp);
+        if (pacote != null) {
+            mostraPreco();
+            configuraBotaoFinalizarCompra();
+        }
     }
 
-    private void mostraPreco(Pacote pacote) {
+    private void configuraBotaoFinalizarCompra() {
+        Button btnFinalizarCompra = findViewById(R.id.pagamento_btn_finalizar_compra);
+        btnFinalizarCompra.setOnClickListener(view -> vaiParaResumoCompra());
+    }
+
+    private void vaiParaResumoCompra() {
+        Intent intent = new Intent(this, ResumoCompraActivity.class);
+        intent.putExtra(CHAVE_PACOTE, pacote);
+        startActivity(intent);
+    }
+
+    private void mostraPreco() {
         TextView tvPrecoPacote = findViewById(R.id.pagamento_tv_preco_pacote);
         String precoFormatado = MoedaUtil.formatarParaBrasileiro(pacote.getPreco());
         tvPrecoPacote.setText(precoFormatado);
